@@ -27,7 +27,7 @@ def main():
         "--get",
         action="append",
         default=[],
-        choices=["sources", "volume", "state"],
+        choices=["sources", "volume","state"],
         help="Gets a value from the TV.",
     )
     parser.add_argument(
@@ -88,14 +88,16 @@ def main():
     parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Logging verbosity."
     )
+    parser.add_argument("--certfile", type=str, help="location of certfile", default="")
+    parser.add_argument("--keyfile", type=str, help="location of certfile", default ="")
 
     args = parser.parse_args()
     
-    startingpoint1 = '/usr/local/lib/node_modules/homebridge-hisense-tv-remotenow/bin/Hisensecerts/rcm_certchain_pem.cer'
-    startingpoint2 = '/usr/local/lib/node_modules/homebridge-hisense-tv-remotenow/bin/Hisensecerts/rcm_pem_privkey.pkcs8'
+    sslparam1 = args.certfile
+    sslparam2 = args.keyfile
     
-    
-    level = logging.INFO
+   
+    level = logging.DEBUG
     	
     root_logger = logging.getLogger()
     stream_handler = logging.StreamHandler()
@@ -111,7 +113,7 @@ def main():
      ssl_context = None
     else:
        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-       ssl_context.load_cert_chain(certfile=startingpoint1, keyfile=startingpoint2)
+       ssl_context.load_cert_chain(certfile=sslparam1, keyfile=sslparam2)
 
     tv = HisenseTv(
         args.hostname, enable_client_logger=args.verbose >= 2, ssl_context=ssl_context, network_interface=args.ifname
